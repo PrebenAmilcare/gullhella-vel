@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gullhella Vel – Styremøter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #f4efe6;
+      --surface:   #fdfaf5;
+      --sidebar:   #1b2a20;
+      --accent:    #4e7e5a;
+      --accent2:   #b07235;
+      --text:      #1c1c18;
+      --muted:     #6a6a5e;
+      --border:    #ddd7c9;
+      --hover:     rgba(255,255,255,0.05);
+      --active-bg: rgba(78,126,90,0.18);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    #sidebar {
+      width: 272px; min-width: 272px;
+      background: var(--sidebar);
+      display: flex; flex-direction: column;
+      height: 100vh;
+    }
+    .sidebar-header {
+      padding: 26px 22px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .brand-name {
+      font-family: 'Lora', serif;
+      font-size: 1.1rem; color: #fff;
+    }
+    .brand-sub {
+      font-size: 0.67rem; font-weight: 400;
+      letter-spacing: 0.13em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); margin-top: 3px;
+    }
+    .search-area {
+      padding: 13px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .search-area input {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 7px;
+      padding: 8px 10px 8px 32px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; outline: none;
+      transition: border-color 0.2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: 9px center;
+    }
+    .search-area input::placeholder { color: rgba(255,255,255,0.28); }
+    .search-area input:focus { border-color: var(--accent); }
+
+    .meeting-list { flex: 1; overflow-y: auto; padding: 10px 0 6px; }
+    .meeting-list::-webkit-scrollbar { width: 3px; }
+    .meeting-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
+    .year-label {
+      font-size: 0.63rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      padding: 14px 22px 5px;
+    }
+    .meeting-btn {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; background: none; border: none;
+      border-left: 3px solid transparent;
+      padding: 10px 18px 10px 22px;
+      cursor: pointer; text-align: left;
+      transition: background 0.14s, border-color 0.14s;
+    }
+    .meeting-btn:hover { background: var(--hover); }
+    .meeting-btn.active { background: var(--active-bg); border-left-color: var(--accent); }
+    .meeting-btn.hidden { display: none; }
+    .btn-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); flex-shrink: 0;
+      transition: background 0.14s;
+    }
+    .meeting-btn.active .btn-dot { background: var(--accent); }
+    .meeting-btn.no-data .btn-dot { background: rgba(255,255,255,0.07); }
+    .btn-text { flex: 1; min-width: 0; }
+    .btn-date { font-family: 'Lora', serif; font-size: 0.88rem; color: rgba(255,255,255,0.85); }
+    .meeting-btn.no-data .btn-date { color: rgba(255,255,255,0.32); font-style: italic; }
+    .btn-count { font-size: 0.68rem; color: rgba(255,255,255,0.28); margin-top: 1px; }
+
+    .sidebar-footer {
+      padding: 12px 22px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      font-size: 0.68rem; color: rgba(255,255,255,0.18);
+    }
+    .no-results { padding: 16px 22px; font-size: 0.78rem; color: rgba(255,255,255,0.25); font-style: italic; display: none; }
+
+    /* MAIN */
+    #main { flex: 1; overflow-y: auto; background: var(--bg); }
+    #main::-webkit-scrollbar { width: 6px; }
+    #main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .welcome {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; gap: 14px; color: var(--muted);
+      text-align: center; padding: 40px;
+    }
+    .welcome-icon { font-size: 2.4rem; opacity: 0.3; }
+    .welcome h2 { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 400; color: var(--muted); }
+    .welcome p { font-size: 0.85rem; max-width: 280px; line-height: 1.6; }
+
+    .meeting-view { display: none; animation: fadeIn 0.22s ease; }
+    .meeting-view.visible { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Hero */
+    .hero {
+      background: var(--sidebar);
+      padding: 44px 50px 32px;
+      position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ''; position: absolute; right: -30px; top: -30px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: rgba(78,126,90,0.1); pointer-events: none;
+    }
+    .hero::before {
+      content: ''; position: absolute; right: 80px; bottom: -50px;
+      width: 130px; height: 130px; border-radius: 50%;
+      background: rgba(176,114,53,0.07); pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(78,126,90,0.22); color: #7fc99a;
+      font-size: 0.67rem; font-weight: 500;
+      letter-spacing: 0.13em; text-transform: uppercase;
+      padding: 4px 9px; border-radius: 4px; margin-bottom: 12px;
+    }
+    .hero-date { font-family: 'Lora', serif; font-size: 2rem; color: #fff; font-weight: 400; line-height: 1.2; position: relative; z-index: 1; }
+    .hero-attendees { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 7px; position: relative; z-index: 1; }
+    .chip {
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65);
+      font-size: 0.76rem; padding: 3px 9px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.09);
+    }
+
+    /* Content */
+    .content-body { padding: 36px 50px 56px; max-width: 800px; }
+    .section-block { margin-bottom: 28px; }
+    .section-title {
+      font-family: 'Lora', serif; font-size: 1rem; font-weight: 600;
+      color: var(--text); margin-bottom: 11px; padding-bottom: 7px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .section-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    ul.items { list-style: none; padding: 0; }
+    ul.items li { position: relative; padding: 5px 0 5px 17px; font-size: 0.86rem; line-height: 1.68; color: #2d2d28; }
+    ul.items li::before { content: '–'; position: absolute; left: 0; color: var(--accent2); }
+    ul.items li ul { margin-top: 3px; padding-left: 14px; list-style: none; }
+    ul.items li ul li::before { color: var(--muted); }
+    .next-box {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent2);
+      border-radius: 8px; padding: 14px 18px;
+      font-size: 0.84rem; color: var(--text); margin-top: 4px;
+    }
+    .next-box .label { font-size: 0.67rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); margin-bottom: 2px; }
+    .no-data-msg { padding: 50px; color: var(--muted); font-size: 0.88rem; font-style: italic; }
+    mark { background: rgba(176,114,53,0.22); color: inherit; border-radius: 2px; padding: 0 1px; }
+  </style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="brand-name">Gullhella Vel</div>
+    <div class="brand-sub">Styremøtenotater</div>
+  </div>
+  <div class="search-area">
+    <input id="searchInput" type="search" placeholder="Søk i møter…" autocomplete="off"/>
+  </div>
+  <div class="meeting-list" id="meetingList">
+
+    <div class="year-label">2024</div>
+    <button class="meeting-btn" data-target="m1" onclick="showMeeting('m1',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">19. august 2024</div><div class="btn-count">6 tilstede · 10 saker</div></span>
+    </button>
+    <button class="meeting-btn" data-target="m2" onclick="showMeeting('m2',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">18. september 2024</div><div class="btn-count">4 tilstede · 7 saker</div></span>
+    </button>
+    <button class="meeting-btn" data-target="m3" onclick="showMeeting('m3',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">30. oktober 2024</div><div class="btn-count">5 tilstede · 7 saker</div></span>
+    </button>
+
+    <div class="year-label">2025</div>
+    <button class="meeting-btn" data-target="m4" onclick="showMeeting('m4',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">11. mars 2025</div><div class="btn-count">5 tilstede · 8 saker</div></span>
+    </button>
+    <button class="meeting-btn" data-target="m5" onclick="showMeeting('m5',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">22. mai 2025</div><div class="btn-count">6 tilstede · 5 saker</div></span>
+    </button>
+    <button class="meeting-btn no-data" data-target="m6" onclick="showMeeting('m6',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">26. juni 2025</div><div class="btn-count">Notater ikke lagt inn</div></span>
+    </button>
+    <button class="meeting-btn no-data" data-target="m7" onclick="showMeeting('m7',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">5. august 2025</div><div class="btn-count">Notater ikke lagt inn</div></span>
+    </button>
+    <button class="meeting-btn no-data" data-target="m8" onclick="showMeeting('m8',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">10. september 2025</div><div class="btn-count">Notater ikke lagt inn</div></span>
+    </button>
+    <button class="meeting-btn no-data" data-target="m9" onclick="showMeeting('m9',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">20. oktober 2025</div><div class="btn-count">Notater ikke lagt inn</div></span>
+    </button>
+
+    <div class="year-label">2026</div>
+    <button class="meeting-btn no-data" data-target="m10" onclick="showMeeting('m10',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">12. januar 2026</div><div class="btn-count">Notater ikke lagt inn</div></span>
+    </button>
+    <button class="meeting-btn no-data" data-target="m11" onclick="showMeeting('m11',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">11. februar 2026</div><div class="btn-count">Notater ikke lagt inn</div></span>
+    </button>
+    <button class="meeting-btn" data-target="m12" onclick="showMeeting('m12',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">5. mars 2026</div><div class="btn-count">3 saker</div></span>
+    </button>
+    <button class="meeting-btn" data-target="m13" onclick="showMeeting('m13',this)">
+      <span class="btn-dot"></span>
+      <span class="btn-text"><div class="btn-date">18. mars 2026</div><div class="btn-count">5 tilstede · 5 saker</div></span>
+    </button>
+
+    <div class="no-results" id="noResults">Ingen treff på søket.</div>
+  </div>
+  <div class="sidebar-footer">13 styremøter · 2024–2026</div>
+</nav>
+
+<main id="main">
+
+  <div class="welcome" id="welcome">
+    <div class="welcome-icon">🌿</div>
+    <h2>Velg et styremøte</h2>
+    <p>Velg et møte fra listen til venstre for å lese notater og saker.</p>
+  </div>
+
+  <!-- M1: 19.08.2024 -->
+  <div class="meeting-view" id="m1">
+    <div class="hero">
+      <div class="hero-tag">Styremøte · 2024</div>
+      <div class="hero-date">19. august 2024</div>
+      <div class="hero-attendees">
+        <span class="chip">Einar</span><span class="chip">Nina</span><span class="chip">Siw</span>
+        <span class="chip">Egil (online)</span><span class="chip">Preben</span><span class="chip">Espen</span>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Saker</div>
+        <ul class="items">
+          <li>Espen informerte om prosjekt for nytt anlegg på grusbanen. Det er dialog med kommunen, og mulig å søke spillemidler for lokalanlegg. Trengs prosjektgruppe for innhenting av informasjon og utarbeidelse av søknader. Thomas i kommunen: kan søkes om midler til prosjektering. <strong>Egil tar ansvar for neste steg mot kommunen.</strong></li>
+          <li>Sparebankstiftelsen er aktuell å søke, med mulig utbetaling i desember 2025.</li>
+          <li>Forslag til bruk av området: streetbasket, tufte, klatrestatue, balanseapparater, sitteområder med tak og grill.</li>
+          <li>Benker kjøpes inn med gravering – Einar bestiller. Det søkes støtte fra Asker velforbund til benker og bord.</li>
+          <li>Lekeplasskontroll på Ringveien gjennomført før sommeren. Avvik må utbedres – noen punkter kan være reklamasjon mot Aktiv Lek. Mer bark rundt klatrestativet.</li>
+          <li>Trær på lekeplassen kuttet uten å kontakte styret. Kommunen er informert. Einar skriver Facebook-innlegg.</li>
+          <li>Mur bygd i stien mellom Grevlingåsen og Gamle Røykenvei. Vei- og stikomiteen er informert.</li>
+          <li>Vardåsen Opp arrangeres 22. september.</li>
+          <li>Høstdugnad: 19. oktober kl. 12–15. Fokus på stier og rydding av lekeplassen i Jørgensvei. Preben oppretter Facebook-arrangement. Nina undersøker om kommunen kan hente materialer.</li>
+          <li>Einar sender purringer til dem som ikke har betalt.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Neste møte</div>
+        <div class="next-box"><div><div class="label">Neste styremøte</div>19. september 2024 – Einar sender innkalling</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M2: 18.09.2024 -->
+  <div class="meeting-view" id="m2">
+    <div class="hero">
+      <div class="hero-tag">Styremøte · 2024</div>
+      <div class="hero-date">18. september 2024</div>
+      <div class="hero-attendees">
+        <span class="chip">Egil</span><span class="chip">Einar</span><span class="chip">Nina</span><span class="chip">Preben</span>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Saker</div>
+        <ul class="items">
+          <li>Kommunens jurist konkluderte med at Gullhella Vel skal ivareta lekeplassen i Jørgensvei. Materialene er fjernet. Egil deler ut henvendelse til beboere for innspill om området.</li>
+          <li>Dugnad: Egil sjekker mulighet for kvistkvern. Nina sjekker flis til lekeplass med kommunen før Einar bestiller.</li>
+          <li>Ringveien lekeplass: Nina purrer klage mot Aktiv Lek og undersøker om kommunen har utbedret deler.</li>
+          <li>Nye benker og bord plasseres ut – 3 benker og 2 piknikkbord. Foreslåtte steder: krysset i Grevlingåsen, langs Gamle Røykenvei ved kryss til Ringvei, og Gullhellaveien/Korpfaretkrysset. Einar hører med beboere om plasseringen langs Gamle Røykenvei.</li>
+          <li>Brev til fylkeskommunen om trafikk på Røykenveien under arbeid, i samarbeid med andre aktører.</li>
+          <li>Gullhella stasjon: parkeringsplass ikke ferdig. Vellet følger opp mot kommunen om dialog med Bane Nor om sikret jernbaneovergang.</li>
+          <li>Vardåsen Opp er klart – lapper levert i postkassene.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Dugnad 19. oktober</div>
+        <ul class="items">
+          <li>Fremmøte i bunnen av Kodalsveien.</li>
+          <li>Ikke barnevennlig – trengs folk som kan håndtere motorsag og kverne/flytte kvist.</li>
+          <li>Oppfordres til generell dugnad i stier og utenfor egen tomt.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Neste møte</div>
+        <div class="next-box"><div><div class="label">Neste styremøte</div>Onsdag 23. oktober kl. 19.30</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M3: 30.10.2024 -->
+  <div class="meeting-view" id="m3">
+    <div class="hero">
+      <div class="hero-tag">Styremøte · 2024</div>
+      <div class="hero-date">30. oktober 2024</div>
+      <div class="hero-attendees">
+        <span class="chip">Einar</span><span class="chip">Nina</span><span class="chip">Egil</span><span class="chip">Siw</span><span class="chip">Rune</span>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Saker</div>
+        <ul class="items">
+          <li>Dugnaden 19. oktober gjennomført – arbeid på stier i skogsstien.</li>
+          <li>Benker plassert ut, men hentes inn og pakkes inn ved første snøfall.</li>
+          <li>Brev sendt fylkeskommunen om befaring av Røykenveien, i samarbeid med Asker og Bærum trafikksikkerhetsforening. Kommunen er bedt om å delta i utredningsarbeid om Røykenveien.</li>
+          <li>Gullhella stasjon: sikkerhetsoppgraderinger må til kundeservice hos Bane Nor. Parkeringsplass utbedres mot vannsamling.</li>
+          <li>Ca. 120 medlemmer har betalt. Einar organiserer ny purrerunde.</li>
+          <li>Ønske om å omdisponere midler fra velforbundet til benkinnkjøp.</li>
+          <li>Møte med kommunen om fotballbane-arealet: anbefalt å høre i lokalområdet om ønsket bruk. Kostnader til prosjektering dekkes av vellet, men kan søkes i hovedsøknad.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Agenda neste møte</div>
+        <ul class="items">
+          <li>Budsjett 2025</li>
+          <li>Søknad til Sparebankstiftelsen</li>
+          <li>Styremiddag / julebord</li>
+          <li>Utbetaling av driftsmidler fra kommunen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- M4: 11.03.2025 -->
+  <div class="meeting-view" id="m4">
+    <div class="hero">
+      <div class="hero-tag">Styremøte · 2025</div>
+      <div class="hero-date">11. mars 2025</div>
+      <div class="hero-attendees">
+        <span class="chip">Einar</span><span class="chip">Nina</span><span class="chip">Rune</span><span class="chip">Preben</span><span class="chip">Egil</span>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Saker</div>
+        <ul class="items">
+          <li>Søknad om driftsmidler fra kommunen for begge arealer – for 2024 og 2025.</li>
+          <li>Einar oppdaterer BRREG med faktisk styresammensetning.</li>
+          <li>Einar hører med Siw om kapasitet og ønske om å drive videre.</li>
+          <li>Preben undersøker digitalisering av innbetaling og purring.</li>
+          <li>Skidag arrangeres sammen med Martefondet – usikkerhet rundt Gullhella Vels rolle.</li>
+          <li>Tillitsvalgtmiddag: 3. mars kl. 19.00 på Lille Havelli – Rune booker bord.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Årsmøte og dugnad – 4. mai</div>
+        <ul class="items">
+          <li>Årsmøte kl. 12, dugnad kl. 13–15.</li>
+          <li>Preben lager Facebook-event.</li>
+          <li>420 eksemplarer printes innen 6. april: årsoppgave, dugnadsinformasjon og giro.</li>
+          <li>Årsberetninger leveres til Einar innen 23. mars: økonomi, veikomite, barnehage og styret.</li>
+          <li>Budsjett 2025 og regnskap 2024 ferdigstilles – inkl. apparater til Jørgensvei, gatelys i Parkveien og nye stiskilt.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Neste møte</div>
+        <div class="next-box"><div><div class="label">Neste styremøte</div>3. mars kl. 17.30 i Asker</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M5: 22.05.2025 -->
+  <div class="meeting-view" id="m5">
+    <div class="hero">
+      <div class="hero-tag">Styremøte · 2025</div>
+      <div class="hero-date">22. mai 2025</div>
+      <div class="hero-attendees">
+        <span class="chip">Egil</span><span class="chip">Nina</span><span class="chip">Einar</span>
+        <span class="chip">Preben</span><span class="chip">Rune</span><span class="chip">Stine</span>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Saker</div>
+        <ul class="items">
+          <li>Beboermøte om arealet på Eriks vei: 19. juni kl. 19.30 på fellesområdet ved Erik/Jørgensvei. Mål: innspill fra beboere og diskusjon om gressklipping som fellesinnsats. Preben legger ut Facebook-post, Einar og Egil ordner brev i postkasser. Søkes Asker velforbund om penger til huskestativ.</li>
+          <li>Prosjekt Grusbanen: Kari-Anne Sandal Nepple og Maria deltar i prosjektgruppe. Rune deltar fra styret. Møte med prosjektgruppe 2. juni.</li>
+          <li>Rune bestiller fotballmål for å øke aktiviteten på grusbanen.</li>
+          <li>Kommunen setter opp skilt om parkering på banen stenges, med gitt frist.</li>
+          <li>Einar kontakter Stine for å legge til brukere og fjerne gamle i e-post og dokumenttilgang.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Neste møte</div>
+        <div class="next-box"><div><div class="label">Neste styremøte</div>26. juni kl. 19.30 – vurdering av utplassering benk og bord</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M6–M12: placeholder -->
+  <div class="meeting-view" id="m6"><div class="no-data-msg">Notater for 26. juni 2025 er ikke lagt inn ennå.</div></div>
+  <div class="meeting-view" id="m7"><div class="no-data-msg">Notater for 5. august 2025 er ikke lagt inn ennå.</div></div>
+  <div class="meeting-view" id="m8"><div class="no-data-msg">Notater for 10. september 2025 er ikke lagt inn ennå.</div></div>
+  <div class="meeting-view" id="m9"><div class="no-data-msg">Notater for 20. oktober 2025 er ikke lagt inn ennå.</div></div>
+  <div class="meeting-view" id="m10"><div class="no-data-msg">Notater for 12. januar 2026 er ikke lagt inn ennå.</div></div>
+  <div class="meeting-view" id="m11"><div class="no-data-msg">Notater for 11. februar 2026 er ikke lagt inn ennå.</div></div>
+  <!-- M12: 05.03.2026 -->
+  <div class="meeting-view" id="m12">
+    <div class="hero">
+      <div class="hero-tag">Styremøte · 2026</div>
+      <div class="hero-date">5. mars 2026</div>
+      <div class="hero-attendees">
+        <span class="chip">Ikke registrert</span>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Saker</div>
+        <ul class="items">
+          <li>Årsmøte i Asker Velforbund 2026 – Slemmestad, 11. mars kl. 19.00.</li>
+          <li>Utsettelse av tilskudd fra Asker Velforbund: tilskudd i 2025 er godkjent til høsten 2026 for huskestativ.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Årsmøte og årsberetning</div>
+        <ul class="items">
+          <li>Budsjett 2026 vedtas på neste styremøte – alle melder inn behov innen da.</li>
+          <li>Dugnadsplan: Nina kontakter lekeplassleverandør for befaring før dugnaden.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Vedtekter for Gullhella Vel</div>
+        <ul class="items">
+          <li>Einar skanner og sender ut gjeldende vedtekter.</li>
+          <li>Styret vurderer endringer i vedtektene i løpet av 2026.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Neste møte</div>
+        <div class="next-box"><div><div class="label">Neste styremøte</div>18. mars 2026</div></div>
+        <p style="margin-top:12px; font-size:0.8rem; color:var(--muted);">Møte avsluttet kl. 18.30</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- M13: 18.03.2026 -->
+  <div class="meeting-view" id="m13">
+    <div class="hero">
+      <div class="hero-tag">Styremøte · 2026</div>
+      <div class="hero-date">18. mars 2026</div>
+      <div class="hero-attendees">
+        <span class="chip">Einar</span><span class="chip">Egil</span><span class="chip">Nina</span>
+        <span class="chip">Stine</span><span class="chip">Rune</span>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Saker</div>
+        <ul class="items">
+          <li>Veiklassifisering – Ringveien mot lekeplassen: Kommunen virker ikke som om de endrer holdning etter høringsrunden. Grevlingåsen har også fått varsel om ny veiklassifisering.</li>
+          <li>Asker velforening anbefaler at alle vel melder seg inn i Vellenes Fellesorganisasjon – spesielt med tanke på ansvarsforsikring for lekeplasser.</li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Årsmøte</div>
+        <ul class="items">
+          <li>Printing hos printleverandør som tidligere.</li>
+          <li>Styret gjennomgikk innkalling og agenda for årsmøtet.</li>
+          <li>Forslag til medlemskontingent 2026: kr 350,–</li>
+          <li>Budsjettforslag 2026 gjennomgått og godkjent i styremøte som forslag til årsmøte.</li>
+          <li>Siste utleveringsfrist: 11. april.</li>
+          <li>Innhold i utsendelse:
+            <ul>
+              <li>Innsamling av ideer til grusbanen</li>
+              <li>Betaling av kontingent</li>
+              <li>Årsregnskap</li>
+              <li>Årsberetning per komité og styret</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><span class="dot"></span>Neste møte</div>
+        <div class="next-box"><div><div class="label">Neste styremøte</div>13. april kl. 19.30</div></div>
+        <p style="margin-top:12px; font-size:0.8rem; color:var(--muted);">Møte avsluttet kl. 21.45</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function showMeeting(id, btn) {
+    document.querySelectorAll('.meeting-view').forEach(v => v.classList.remove('visible'));
+    document.querySelectorAll('.meeting-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('welcome').style.display = 'none';
+    document.getElementById(id).classList.add('visible');
+    btn.classList.add('active');
+    document.getElementById('main').scrollTop = 0;
+  }
+
+  document.getElementById('searchInput').addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    const buttons = document.querySelectorAll('.meeting-btn');
+    let visible = 0;
+
+    buttons.forEach(btn => {
+      const text = btn.textContent.toLowerCase();
+      const targetId = btn.dataset.target;
+      const viewText = document.getElementById(targetId)?.textContent.toLowerCase() || '';
+      const match = !q || text.includes(q) || viewText.includes(q);
+      btn.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+
+    document.querySelectorAll('.year-label').forEach(label => {
+      let next = label.nextElementSibling;
+      let hasVisible = false;
+      while (next && !next.classList.contains('year-label') && !next.classList.contains('no-results')) {
+        if (next.classList.contains('meeting-btn') && !next.classList.contains('hidden')) hasVisible = true;
+        next = next.nextElementSibling;
+      }
+      label.style.display = hasVisible ? '' : 'none';
+    });
+
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>
