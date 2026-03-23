@@ -183,6 +183,46 @@
     .next-box .label { font-size: 0.67rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); margin-bottom: 2px; }
     .no-data-msg { padding: 50px; color: var(--muted); font-size: 0.88rem; font-style: italic; }
     mark { background: rgba(176,114,53,0.22); color: inherit; border-radius: 2px; padding: 0 1px; }
+    .section-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 10px 0 0; }
+    .meeting-btn.annual .btn-date { color: rgba(255,200,100,0.85); }
+    .annual-dot { background: rgba(176,114,53,0.5) !important; }
+    .meeting-btn.annual.active .annual-dot { background: var(--accent2) !important; }
+    .meeting-btn.annual.active { background: rgba(176,114,53,0.15); border-left-color: var(--accent2); }
+    .hero.annual { background: linear-gradient(135deg, #2a1f0f 0%, #1b2a20 100%); }
+    .hero.annual .hero-tag { background: rgba(176,114,53,0.25); color: #e8a85a; }
+    .tab-bar { display: flex; flex-wrap: wrap; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 28px; }
+    .tab-btn { background: none; border: none; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; flex: 1 1 auto; text-align: center; transition: color 0.15s, border-color 0.15s; }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeIn 0.18s ease; }
+    .fin-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; margin-bottom: 20px; }
+    .fin-table th { text-align: left; font-weight: 500; font-size: 0.73rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 6px 10px; border-bottom: 2px solid var(--border); }
+    .fin-table th:last-child { text-align: right; }
+    .fin-table td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,0.04); }
+    .fin-table td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    .fin-table tr.group-header td { font-weight: 600; font-size: 0.8rem; background: rgba(0,0,0,0.025); padding-top: 12px; }
+    .fin-table tr.total td { font-weight: 700; border-top: 2px solid var(--border); border-bottom: none; padding-top: 10px; }
+    .fin-table tr.result td { font-weight: 700; font-size: 0.9rem; background: var(--surface); border-top: 2px solid var(--border); }
+    .pos { color: #2e7d45; } .neg { color: #b03535; }
+    .fin-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 8px; }
+    @media (max-width: 700px) { .fin-cols { grid-template-columns: 1fr; } }
+    .person-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .person-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; }
+    .person-card .role { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+    .event-list { display: flex; flex-direction: column; gap: 12px; }
+    .event-card { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 8px; padding: 14px 18px; }
+    .event-card.accent2 { border-left-color: var(--accent2); }
+    .event-card h4 { font-family: 'Lora', serif; font-size: 0.92rem; margin-bottom: 5px; }
+    .event-card p { font-size: 0.83rem; line-height: 1.6; color: #2d2d28; }
+    .stat-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; min-width: 130px; }
+    .stat-box .val { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 600; color: var(--accent); }
+    .stat-box .lbl { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+    .agenda-list { counter-reset: agenda; list-style: none; padding: 0; }
+    .agenda-list li { counter-increment: agenda; display: flex; align-items: baseline; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.87rem; }
+    .agenda-list li:last-child { border-bottom: none; }
+    .agenda-list li::before { content: counter(agenda); display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 0.7rem; font-weight: 600; flex-shrink: 0; }
   </style>
 </head>
 <body>
@@ -255,9 +295,16 @@
       <span class="btn-text"><div class="btn-date">18. mars 2026</div><div class="btn-count">5 tilstede · 5 saker</div></span>
     </button>
 
+    <div class="section-divider"></div>
+    <div class="year-label">Årsmøter</div>
+    <button class="meeting-btn annual" data-target="am2026" onclick="showMeeting('am2026',this)">
+      <span class="btn-dot annual-dot"></span>
+      <span class="btn-text"><div class="btn-date">25. april 2026</div><div class="btn-count">Innkalling · Årsmelding · Regnskap</div></span>
+    </button>
+
     <div class="no-results" id="noResults">Ingen treff på søket.</div>
   </div>
-  <div class="sidebar-footer">13 styremøter · 2024–2026</div>
+  <div class="sidebar-footer">13 styremøter · 1 årsmøte · 2024–2026</div>
 </nav>
 
 <main id="main">
@@ -528,9 +575,334 @@
     </div>
   </div>
 
+  <!-- ANNUAL MEETING 2026 -->
+  <div class="meeting-view" id="am2026">
+    <div class="hero annual">
+      <div class="hero-tag">Årsmøte 2026</div>
+      <div class="hero-date">25. april 2026 · kl. 12:00</div>
+      <div class="hero-attendees">
+        <span class="chip">Ringveien 4, Asker</span>
+        <span class="chip">Lekeplassen ved Ringveien</span>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="showTab('am2026','innkalling',this)">Innkalling</button>
+        <button class="tab-btn" onclick="showTab('am2026','styret',this)">Styrets årsmelding</button>
+        <button class="tab-btn" onclick="showTab('am2026','vei',this)">Vei- og parkkomiteen</button>
+        <button class="tab-btn" onclick="showTab('am2026','aktivitet',this)">Aktivitetskomiteen</button>
+        <button class="tab-btn" onclick="showTab('am2026','barnehage',this)">Barnas Hus</button>
+        <button class="tab-btn" onclick="showTab('am2026','regnskap',this)">Regnskap og budsjett</button>
+      </div>
+
+      <!-- TAB: Innkalling -->
+      <div class="tab-panel active" id="am2026-innkalling">
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Praktisk informasjon</div>
+          <ul class="items">
+            <li>Sted: Lekeplassen i enden av Ringveien, Ringveien 4, 1386 Asker</li>
+            <li>Tid: 25. april 2026 kl. 12:00</li>
+            <li>Innspill til saker meldes til <strong>gullhella.vel@gmail.com</strong> innen 23. april</li>
+            <li>Etter årsmøtet arrangeres dugnad – styret er tilgjengelig for innspill og kommentarer</li>
+          </ul>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Dagsorden</div>
+          <ol class="agenda-list">
+            <li>Styrets beretning</li>
+            <li>Komiteenes årsmelding</li>
+            <li>Revidert regnskap og budsjett</li>
+            <li>Muligheter og ideer for idrettsplassen</li>
+            <li>Innkomne forslag</li>
+            <li>Valg av styremedlemmer</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- TAB: Styrets årsmelding -->
+      <div class="tab-panel" id="am2026-styret">
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Styresammensetning 2025</div>
+          <div class="person-list">
+            <div class="person-card"><div>Einar Løvseth</div><div class="role">Styreleder</div></div>
+            <div class="person-card"><div>Preben A. Mortensen</div><div class="role">Sekretær</div></div>
+            <div class="person-card"><div>Rune Sjøli</div><div class="role">Kasserer</div></div>
+            <div class="person-card"><div>Egil Skavang</div><div class="role">Styremedlem · Leder vei- og parkkomiteen</div></div>
+            <div class="person-card"><div>Stine Grue Rygg</div><div class="role">Styremedlem · Leder aktivitetskomiteen</div></div>
+            <div class="person-card"><div>Nina Martinsen</div><div class="role">Styremedlem · Repr. Barnas Hus</div></div>
+          </div>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Styremøter i perioden</div>
+          <ul class="items">
+            <li>5 styremøter avholdt: 3. april, 26. juni, 5. august, 10. september og 20. oktober</li>
+          </ul>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Saker behandlet i 2025</div>
+          <ul class="items">
+            <li>Trafikksikkerhet på Røykenveien og interne veier</li>
+            <li>Innkjøp og utplassering av sittebenker i området</li>
+            <li>Planlegge oppgradering av lekeplassen i Eriks vei</li>
+            <li>Planlegge oppgradering og merking av stier</li>
+            <li>Søknader om midler for gjennomføring av prosjekter</li>
+            <li>Sikkert krysningspunkt på Gullhella stasjon</li>
+            <li>Felles arrangementer for beboere</li>
+          </ul>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Prioriteringer 2026</div>
+          <ul class="items">
+            <li>Oppgradering av lekeplassen i Eriks vei</li>
+            <li>Oppfølging av veier som varsles tilbakeført fra kommunen</li>
+            <li>Nye skilt for merking av turstier</li>
+            <li>Søknader om midler for gjennomføring av prosjekter</li>
+            <li>Felles arrangementer for beboere</li>
+            <li>Trafikksikkerhet på Røykenveien og interne veier</li>
+            <li>Sikkert krysningspunkt på Gullhella stasjon</li>
+            <li>Fortsette arbeidet med aktivitetspark ved gammel fotballbane ved Barnas Hus</li>
+          </ul>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Fra styrelederen</div>
+          <p style="font-size:0.86rem;line-height:1.75;color:#2d2d28;font-style:italic;border-left:3px solid var(--border);padding-left:16px;">
+            «Året 2025 var nok et positivt og hyggelig år for velet. Vi opplever et godt engasjement rundt aktivitetene som arrangeres, og det er tydelig at deltakerne setter pris på det sosiale fellesskapet. Vi ønsker å takke alle beboere som betaler årskontingenten – deres bidrag er avgjørende for at vi sammen kan videreutvikle Gullhella som et godt sted å bo.»
+          </p>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:8px;">— Einar Løvseth, Styreleder</p>
+        </div>
+      </div>
+
+      <!-- TAB: Vei- og parkkomiteen -->
+      <div class="tab-panel" id="am2026-vei">
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Komiteens sammensetning</div>
+          <div class="person-list">
+            <div class="person-card"><div>Egil Skavang</div><div class="role">Komitéleder</div></div>
+            <div class="person-card"><div>Sjur Seim</div><div class="role">Medlem</div></div>
+            <div class="person-card"><div>Jon Dag Skagmo</div><div class="role">Medlem</div></div>
+            <div class="person-card"><div>Sven Lunøe Pihl</div><div class="role">Medlem</div></div>
+            <div class="person-card"><div>Christian Arstad</div><div class="role">Medlem</div></div>
+          </div>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Saker og status</div>
+          <div class="event-list">
+            <div class="event-card accent2">
+              <h4>Røykenveien – trafikksikkerhet</h4>
+              <p>Svært vanskelig å få fylkeskommunen til å besvare henvendelser. Kommunen er lite optimistisk rundt fylkeskommunens interesse for Røykenveien. Også vanskelig å øke politiets hastighetscontroller.</p>
+            </div>
+            <div class="event-card accent2">
+              <h4>Veiklassifisering – Ringveien</h4>
+              <p>Kommunen har foreslått å overdra stikkveier til beboerne grunnet svak økonomi. Gullhella Vel har – i samråd med berørte beboere – avgitt høringsuttalelse som anbefaler kommunen mot overdragelse.</p>
+            </div>
+            <div class="event-card">
+              <h4>Stier</h4>
+              <p>Stiene er befart og behov for oppgradering av trapper, skilting og terreng er registrert. Innkjøp og montering av nye skilt planlegges gjennomført i 2026. Sti fra Parkveien til Skogstien opparbeides etter avtale med grunneier.</p>
+            </div>
+            <div class="event-card">
+              <h4>Lekeplasser og plasser</h4>
+              <p>Dialog med beboere i Ulfs vei og Jørgens vei om bruk og drift. Vellet forbereder anskaffelse av nye lekeapparater. På Parktomten planlegges utskifting av huskestativ i løpet av 2026.</p>
+            </div>
+            <div class="event-card accent2">
+              <h4>Gullhella stasjon</h4>
+              <p>Vellet arbeider for en plandelt overgang (bro). Etter alvorlig hendelse 6. mars 2025 ble det gjennomført befaring med Bane NOR, VY, Skiforeningen og Asker kommune. Enkelte tiltak er gjennomført, men situasjonen er ikke vesentlig bedret. Bane NOR har varslet at nye, mer stillegående tog i 2027 vil forverre trusselbildet, og er positive til samarbeid med kommunen om overgang.</p>
+            </div>
+            <div class="event-card">
+              <h4>Skiaktiviteter ved Eidskrysset</h4>
+              <p>Stor aktivitet ved Eidskrysset også denne vinteren. Skilting og gjerder som skal hindre kryssing av Røykenveien har vært utilfredsstillende. Ytterligere tiltak må gjøres før neste sesong.</p>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:0.78rem;color:var(--muted);margin-top:4px;">Gullhella, 18. mars 2026 · Egil Skavang, Komitéleder</p>
+      </div>
+
+      <!-- TAB: Aktivitetskomiteen -->
+      <div class="tab-panel" id="am2026-aktivitet">
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Komiteens sammensetning</div>
+          <div class="person-list">
+            <div class="person-card"><div>Stine Grue Rygg</div><div class="role">Leder</div></div>
+            <div class="person-card"><div>Marthe Walmsness Bay</div><div class="role">Medlem</div></div>
+            <div class="person-card"><div>Katinka Sundt</div><div class="role">Medlem</div></div>
+            <div class="person-card"><div>Ingrid H. Johansen</div><div class="role">Medlem</div></div>
+            <div class="person-card"><div>Elin M. Mortensen</div><div class="role">Medlem</div></div>
+            <div class="person-card"><div>Siw Stensrud Jerve</div><div class="role">Medlem</div></div>
+          </div>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Gjennomførte arrangementer 2025</div>
+          <div class="event-list">
+            <div class="event-card">
+              <h4>Vårdugnad med grillsamling</h4>
+              <p>Tradisjonell dugnad med godt oppmøte. Rydding av fellesområder, grøntarealer og stier. Etterfulgt av uformell grillsamling på lekeplassen i Ringveien.</p>
+            </div>
+            <div class="event-card">
+              <h4>17. mai-grilling</h4>
+              <p>Fast og populær tradisjon – uformell grilling på lekeplassen i Ringveien etter nasjonaldagsfeiringen. Godt vær og stort oppmøte.</p>
+            </div>
+            <div class="event-card">
+              <h4>Vardåsen Opp – 15. september</h4>
+              <p>Nabolagstur med natursti og felles aktiviteter. Ca. 60 deltakere på tvers av alder. Vellykket til tross for skiftende høstvær.</p>
+            </div>
+            <div class="event-card">
+              <h4>Julegrantenning – 1. søndag i advent</h4>
+              <p>Arrangement på barnehagetomten med Blakstad og Heggedal skolekorps, gløgg, pepperkaker og loddtrekning. Samler mange beboere hvert år.</p>
+            </div>
+            <div class="event-card accent2">
+              <h4>Skidag – utgikk i 2025</h4>
+              <p>Utgikk grunnet utilstrekkelige snøforhold. Skidagen 2026 ble derimot en stor suksess for både små og store.</p>
+            </div>
+          </div>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Prioriteringer 2026</div>
+          <ul class="items">
+            <li>Videreføre etablerte arrangementer.</li>
+            <li>Utvikle grusbanen nedenfor Barnas Hus til et inkluderende samlingspunkt med aktivitetstilbud for alle aldersgrupper.</li>
+            <li>Innspill og ideer kan sendes til et av komiteens medlemmer, legges i postkassen på Ringveien 5, eller sendes til gullhella.vel@gmail.com.</li>
+          </ul>
+        </div>
+        <p style="font-size:0.78rem;color:var(--muted);margin-top:4px;">På vegne av aktivitetskomiteen · Stine Grue Rygg</p>
+      </div>
+
+      <!-- TAB: Barnas Hus -->
+      <div class="tab-panel" id="am2026-barnehage">
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Om barnehagen</div>
+          <ul class="items">
+            <li>AS Barnas Hus Gullhella driver barnehage i Bukkemyrveien 3 med naturområde, grillhytte, lavvo og bålplass.</li>
+            <li>Startet som aksjeselskap i 1989. Største aksjonær er Gullhella Vel. Eventuelt overskudd tilbakeføres til driften.</li>
+          </ul>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Nøkkeltall 2025</div>
+          <div class="stat-row">
+            <div class="stat-box"><div class="val">18</div><div class="lbl">Småbarnsplasser (alle fylt)</div></div>
+            <div class="stat-box"><div class="val">32</div><div class="lbl">Barn på storbarnsavdelingene</div></div>
+            <div class="stat-box"><div class="val">4,9/5</div><div class="lbl">Foreldreundersøkelse (3. plass av 100 i Asker)</div></div>
+            <div class="stat-box"><div class="val">4,5 %</div><div class="lbl">Sykefravær (bransje: 10,3 %)</div></div>
+            <div class="stat-box"><div class="val">15</div><div class="lbl">Ansatte i gjennomsnitt</div></div>
+          </div>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Investeringer og vedlikehold 2025</div>
+          <ul class="items">
+            <li>Utbedret takstol og montert loftstrapp</li>
+            <li>Felling og beskjæring av trær</li>
+            <li>Graving og drenering</li>
+            <li>Ny platting og trapp, nytt utedo på lavvoplassen, ny sandkasse (støttet av Sparebankstiftelsen)</li>
+            <li>Innkjøp av nytt vindu, dør og panel til grillhytta</li>
+          </ul>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Økonomi</div>
+          <ul class="items">
+            <li>Årsresultat 2025: <strong>kr 40 637</strong> (mot budsjettert underskudd på kr 107 766)</li>
+            <li>Avviket skyldes høyere finansinntekter (~kr 64 000 mer fra høyrentekonto) og ~kr 60 000 høyere tilskudd enn budsjettert</li>
+            <li>Budsjettet for 2026 går i underskudd – sektoren er underfinansiert og pensjonskostandene øker</li>
+          </ul>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Styre Barnas Hus 2025</div>
+          <div class="person-list">
+            <div class="person-card"><div>Birgitte Røen</div><div class="role">Styrets leder</div></div>
+            <div class="person-card"><div>Nina Martinsen</div><div class="role">Nestleder</div></div>
+            <div class="person-card"><div>Sevian Stenvig</div><div class="role">Styremedlem</div></div>
+            <div class="person-card"><div>Mikkel Bugge</div><div class="role">Styremedlem</div></div>
+            <div class="person-card"><div>Simon Alexander Hansen</div><div class="role">Styremedlem</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Regnskap og budsjett -->
+      <div class="tab-panel" id="am2026-regnskap">
+        <div class="fin-cols">
+          <div>
+            <div class="section-title" style="margin-bottom:12px;"><span class="dot"></span>Resultatregnskap 2025</div>
+            <table class="fin-table">
+              <thead><tr><th>Post</th><th>2025</th></tr></thead>
+              <tbody>
+                <tr class="group-header"><td colspan="2">Inntekter</td></tr>
+                <tr><td>Medlemskontingent</td><td>68 004</td></tr>
+                <tr><td>Skidag</td><td>0</td></tr>
+                <tr><td>Tilskudd Asker kommune</td><td>43 000</td></tr>
+                <tr><td>Tilskudd Asker Velforbund</td><td>0</td></tr>
+                <tr><td>Renteinntekter</td><td>4 960</td></tr>
+                <tr class="total"><td>Sum inntekter</td><td>115 963</td></tr>
+                <tr class="group-header"><td colspan="2">Utgifter</td></tr>
+                <tr><td>Velferd</td><td>4 440</td></tr>
+                <tr><td>Vedlikehold fellesområder</td><td>22 754</td></tr>
+                <tr><td>Teknisk utstyr</td><td>–</td></tr>
+                <tr><td>Kontingenter</td><td>2 240</td></tr>
+                <tr><td>Administrasjon</td><td>19 691</td></tr>
+                <tr class="total"><td>Sum utgifter</td><td>49 125</td></tr>
+                <tr class="result"><td>Årsoverskudd</td><td class="pos">66 838</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div class="section-title" style="margin-bottom:12px;"><span class="dot"></span>Budsjett 2026</div>
+            <table class="fin-table">
+              <thead><tr><th>Post</th><th>2026</th></tr></thead>
+              <tbody>
+                <tr class="group-header"><td colspan="2">Inntekter</td></tr>
+                <tr><td>Medlemskontingent</td><td>63 000</td></tr>
+                <tr><td>Tilskudd Asker kommune</td><td>25 000</td></tr>
+                <tr><td>Tilskudd Asker Velforbund</td><td>15 000</td></tr>
+                <tr><td>Renteinntekter/andre</td><td>4 500</td></tr>
+                <tr class="total"><td>Sum inntekter</td><td>107 500</td></tr>
+                <tr class="group-header"><td colspan="2">Utgifter</td></tr>
+                <tr><td>Velferd</td><td>4 500</td></tr>
+                <tr><td>Vedlikehold fellesområder</td><td>10 000</td></tr>
+                <tr><td>Stier, lekeplasser</td><td>90 000</td></tr>
+                <tr><td>Kontingenter</td><td>5 110</td></tr>
+                <tr><td>Administrasjon</td><td>16 000</td></tr>
+                <tr><td>Strøm</td><td>0</td></tr>
+                <tr class="total"><td>Sum utgifter</td><td>125 610</td></tr>
+                <tr class="result"><td>Årsunderskudd</td><td class="neg">-18 110</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="section-block">
+          <div class="section-title"><span class="dot"></span>Balanseregnskap pr. 31.12.2025</div>
+          <table class="fin-table">
+            <thead><tr><th>Post</th><th>2025</th></tr></thead>
+            <tbody>
+              <tr class="group-header"><td colspan="2">Eiendeler</td></tr>
+              <tr><td>Aksjer i AS Barnas Hus Gullhella</td><td>0</td></tr>
+              <tr><td>Bankinnskudd driftskonto</td><td>156 563</td></tr>
+              <tr><td>Bankinnskudd sparekonto</td><td>136 859</td></tr>
+              <tr class="total"><td>Eiendeler</td><td>293 422</td></tr>
+              <tr class="group-header"><td colspan="2">Egenkapital</td></tr>
+              <tr><td>Egenkapital pr. 01.01</td><td>218 510</td></tr>
+              <tr><td>Årets overskudd</td><td class="pos">66 838</td></tr>
+              <tr class="total"><td>Egenkapital</td><td>285 348</td></tr>
+              <tr class="group-header"><td colspan="2">Gjeld</td></tr>
+              <tr><td>Kortsiktig gjeld, ukjent</td><td>4 891</td></tr>
+              <tr><td>Vedlikeholdsfond Parkveien</td><td>3 183</td></tr>
+              <tr class="total"><td>Gjeld</td><td>8 074</td></tr>
+              <tr class="result"><td>Egenkapital og gjeld</td><td>293 422</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;">Signert av styret i Gullhella Vel · Dato: 23.03.26</p>
+        </div>
+      </div>
+
+    </div><!-- end content-body -->
+  </div><!-- end am2026 -->
+
 </main>
 
 <script>
+  function showTab(meetingId, tabId, btn) {
+    const view = document.getElementById(meetingId);
+    view.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    view.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(meetingId + '-' + tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
   function showMeeting(id, btn) {
     document.querySelectorAll('.meeting-view').forEach(v => v.classList.remove('visible'));
     document.querySelectorAll('.meeting-btn').forEach(b => b.classList.remove('active'));
