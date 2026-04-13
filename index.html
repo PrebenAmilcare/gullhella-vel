@@ -1030,8 +1030,18 @@
     document.getElementById(id).classList.add('visible');
     btn.classList.add('active');
     document.getElementById('main').scrollTop = 0;
+    history.replaceState(null, '', '#' + id);
     closeSidebar();
   }
+
+  // Open meeting from URL hash on page load
+  (function() {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const btn = document.querySelector('.meeting-btn[data-target="' + hash + '"]');
+      if (btn) showMeeting(hash, btn);
+    }
+  })();
 
   document.getElementById('searchInput').addEventListener('input', function() {
     const q = this.value.trim().toLowerCase();
